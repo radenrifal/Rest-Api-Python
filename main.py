@@ -3,8 +3,44 @@ from app import app
 from config import mysql
 from flask import request, json, jsonify, flash
 
+#get data member
+@app.route('/member')
+def member():
+    try:
+        conn      = mysql.connect()
+        cursor    = conn.cursor(pymysql.cursors.DictCursor)
+        sqlQuery  = "SELECT * FROM an_member WHERE 1=1"
+        cursor.execute(sqlQuery)
+        empRows   = cursor.fetchall()
+        respone   = jsonify(empRows)
+        respone.status_code = 200
+        return respone
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close() 
+        conn.close()
+
+#get data member detail
+@app.route('/member/<int:id>')
+def memberDetails(id):
+    try:
+        conn    = mysql.connect()
+        cursor  = conn.cursor(pymysql.cursors.DictCursor)
+        sqlQuery = "SELECT id, name, email, type, type_status, package FROM an_member WHERE id =%s"
+        cursor.execute(sqlQuery, id)
+        empRow  = cursor.fetchone()
+        respone = jsonify(empRow)
+        respone.status_code = 200
+        return respone
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close() 
+        conn.close() 
+        
 #created data member
-@app.route('/create', methods=['POST'])
+@app.route('/member/create', methods=['POST'])
 def create_emp():
     try:        
         _json   = request.json
@@ -28,44 +64,8 @@ def create_emp():
         cursor.close() 
         conn.close() 
 
-#get data member
-@app.route('/member')
-def member():
-    try:
-        conn      = mysql.connect()
-        cursor    = conn.cursor(pymysql.cursors.DictCursor)
-        sqlQuery  = "SELECT * FROM an_member WHERE 1=1"
-        cursor.execute(sqlQuery)
-        empRows   = cursor.fetchall()
-        respone   = jsonify(empRows)
-        respone.status_code = 200
-        return respone
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close() 
-        conn.close()  
-
-#get data member detail
-@app.route('/member/<int:id>')
-def memberDetails(id):
-    try:
-        conn    = mysql.connect()
-        cursor  = conn.cursor(pymysql.cursors.DictCursor)
-        sqlQuery = "SELECT id, name, email, type, type_status, package FROM an_member WHERE id =%s"
-        cursor.execute(sqlQuery, id)
-        empRow  = cursor.fetchone()
-        respone = jsonify(empRow)
-        respone.status_code = 200
-        return respone
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close() 
-        conn.close() 
-
 #update data member
-@app.route('/update', methods=['PUT'])
+@app.route('/member/update', methods=['PUT'])
 def memberUpdate():
     try:
         _json = request.json
@@ -90,7 +90,7 @@ def memberUpdate():
         cursor.close() 
         conn.close()
 
-@app.route('/delete/<int:id>', methods=['DELETE'])
+@app.route('/member/delete/<int:id>', methods=['DELETE'])
 def deleteMember(id):
 	try:
 		conn      = mysql.connect()
